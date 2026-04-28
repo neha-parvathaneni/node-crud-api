@@ -1,6 +1,13 @@
-const api= require("../config/axiosConfig");
-exports.getPosts=()=> api.get("/posts");
-exports.getPostById=(id)=> api.get(`/posts/${id}`);
-exports.createPost=(data)=> api.post("/posts", data);
-exports.updatePost=(id, data)=> api.put(`/posts/${id}`, data);
-exports.deletePost=(id)=> api.delete(`/posts/${id}`);
+const api = require("../config/axiosConfig");
+const getPosts = () => api.get("/posts");
+const getPostById = (id) => api.get(`/posts/${id}`);
+const createPost = (data) => api.post("/posts", data);
+const updatePost = (id, data) => api.put(`/posts/${id}`, data);
+const deletePost = (id) => api.delete(`/posts/${id}`);
+module.exports = {
+    getPosts,
+    getPostById,
+    createPost,
+    updatePost,
+    deletePost
+};
