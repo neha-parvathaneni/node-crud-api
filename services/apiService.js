@@ -1,13 +1,42 @@
-const api = require("../config/axiosConfig");
-const getPosts = () => api.get("/posts");
-const getPostById = (id) => api.get(`/posts/${id}`);
-const createPost = (data) => api.post("/posts", data);
-const updatePost = (id, data) => api.put(`/posts/${id}`, data);
-const deletePost = (id) => api.delete(`/posts/${id}`);
+const Student = require("../models/Student");
+
+// GET ALL
+const getStudents = async () => {
+    return await Student.findAll();
+};
+
+// GET ONE
+const getStudentById = async (id) => {
+    return await Student.findByPk(id);
+};
+
+// CREATE
+const createStudent = async (data) => {
+    return await Student.create(data);
+};
+
+// UPDATE
+const updateStudent = async (id, data) => {
+    const student = await Student.findByPk(id);
+
+    if (!student) return null;
+
+    return await student.update(data);
+};
+
+// DELETE
+const deleteStudent = async (id) => {
+    const student = await Student.findByPk(id);
+
+    if (!student) return null;
+
+    return await student.destroy();
+};
+
 module.exports = {
-    getPosts,
-    getPostById,
-    createPost,
-    updatePost,
-    deletePost
+    getStudents,
+    getStudentById,
+    createStudent,
+    updateStudent,
+    deleteStudent
 };
