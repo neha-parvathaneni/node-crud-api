@@ -5,6 +5,11 @@ const postRoutes = require("./routes/posts");
 app.use(express.json());
 app.use("/api", postRoutes);
 const PORT = process.env.PORT;
+<<<<<<< Updated upstream
+=======
+const connectDB  = require("./config/db");
+connectDB();
+>>>>>>> Stashed changes
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
