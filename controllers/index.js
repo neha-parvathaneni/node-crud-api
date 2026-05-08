@@ -1,74 +1,56 @@
 const apiService = require("../services/apiService");
 
-// GET ALL
-const getStudents = async (req, res) => {
-    try {
-        const result = await apiService.getStudents();
-        res.json(result.recordset);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-// GET ONE
-const getStudent = async (req, res) => {
-    try {
-        const result = await apiService.getStudentById(req.params.id);
-        res.json(result.recordset);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-// CREATE
 const createStudent = async (req, res) => {
     try {
-        await apiService.createStudent(req.body);
-        res.send("Student created");
+        const result = await apiService.createStudent(req.body);
+        res.json(result);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// UPDATE
-const updateStudent = async (req, res) => {
+const createTeacher = async (req, res) => {
     try {
-        const existing = await apiService.getStudentById(req.params.id);
-
-        if (!existing.recordset.length) {
-            return res.status(404).send("Student not found");
-        }
-
-        const student = existing.recordset[0];
-
-        const updatedData = {
-            Name: req.body.Name ?? student.Name,
-            Age: req.body.Age ?? student.Age,
-            Class: req.body.Class ?? student.Class
-        };
-
-        await apiService.updateStudent(req.params.id, updatedData);
-
-        res.send("Student updated");
+        const result = await apiService.createTeacher(req.body);
+        res.json(result);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
 
-// DELETE
-const deleteStudent = async (req, res) => {
+const createCourse = async (req, res) => {
     try {
-        await apiService.deleteStudent(req.params.id);
-        res.send("Student deleted");
+        const result = await apiService.createCourse(req.body);
+        res.json(result);
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+const enrollStudent = async (req, res) => {
+    try {
+        const { studentId, courseId } = req.body;
+        const result = await apiService.enrollStudent(studentId, courseId);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+const assignTeacher = async (req, res) => {
+    try {
+        const { teacherId, courseId } = req.body;
+        const result = await apiService.assignTeacher(teacherId, courseId);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 };
 
 module.exports = {
-    getStudents,
-    getStudent,
     createStudent,
-    updateStudent,
-    deleteStudent
+    createTeacher,
+    createCourse,
+    enrollStudent,
+    assignTeacher
 };
