@@ -1,48 +1,99 @@
-const apiService = require("../services/apiService");
-const getPosts = async (req, res) => {
+const {
+    createStudent,
+    createTeacher,
+    createCourse,
+    enrollStudent,
+    assignTeacher
+} = require("../services/apiService");
+
+const createStudentController = async (req, res) => {
+
     try {
-        const response = await apiService.getPosts();
-        return res.status(200).json(response.data);
+
+        const student = await createStudent(req.body);
+
+        res.status(201).json(student);
+
     } catch (error) {
-        res.status(500).json({ error : "Failed to fetch posts" });
+
+        res.status(500).json({
+            error: error.message
+        });
     }
 };
-const getPost = async (req, res) => {
-    try{
-        const response = await apiService.getPostById(req.params.id);
-        return res.status(200).json(response.data);
-    } catch (error) {
-        res.status(500).json({ error : "Failed to fetch post" });
-    }
-};
-const createPost = async (req, res) => {
+
+const createTeacherController = async (req, res) => {
+
     try {
-        const response = await apiService.createPost(req.body);
-        return res.status(201).json(response.data);
+
+        const teacher = await createTeacher(req.body);
+
+        res.status(201).json(teacher);
+
     } catch (error) {
-        res.status(500).json({ error : "Failed to create post" });
+
+        res.status(500).json({
+            error: error.message
+        });
     }
 };
-const updatePost = async (req, res) => {
+
+const createCourseController = async (req, res) => {
+
     try {
-        const response = await apiService.updatePost(req.params.id, req.body);
-        return res.status(200).json(response.data);
-    } catch(error) {
-        res.status(500).json({ error : "Failed to update post" });
-    }
-};
-const deletePost = async (req, res) => {
-    try {
-        await apiService.deletePost(req.params.id);
-        res.json({ message : "Post deleted successfully" });
+
+        const course = await createCourse(req.body);
+
+        res.status(201).json(course);
+
     } catch (error) {
-        res.status(500).json({ error : "Failed to delete post" });
+
+        res.status(500).json({
+            error: error.message
+        });
     }
 };
+
+const enrollStudentController = async (req, res) => {
+
+    try {
+
+        const { studentId, courseId } = req.body;
+
+        const result = await enrollStudent(studentId, courseId);
+
+        res.status(200).json(result);
+
+    } catch (error) {
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+const assignTeacherController = async (req, res) => {
+
+    try {
+
+        const { teacherId, courseId } = req.body;
+
+        const result = await assignTeacher(teacherId, courseId);
+
+        res.status(200).json(result);
+
+    } catch (error) {
+
+        res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
-    getPosts,
-    getPost,
-    createPost,
-    updatePost,
-    deletePost
+    createStudentController,
+    createTeacherController,
+    createCourseController,
+    enrollStudentController,
+    assignTeacherController
 };

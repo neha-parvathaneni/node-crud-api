@@ -1,14 +1,23 @@
 require("dotenv").config();
+
 const express = require("express");
+const connectDB = require("./config/db");
+const studentRoutes = require("./routes");
+
 const app = express();
-const postRoutes = require("./routes/posts");
+
 app.use(express.json());
-app.use("/api", postRoutes);
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+
+connectDB();
+
+app.use("/api", studentRoutes);
+
 app.get("/", (req, res) => {
-    res.send("Welcome to the CRUD API");
+    res.send("Welcome to MongoDB CRUD API");
 });
-//PR demo change
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
