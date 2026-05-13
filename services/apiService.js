@@ -1,17 +1,3 @@
-<<<<<<< Updated upstream
-const api = require("../config/axiosConfig");
-const getPosts = () => api.get("/posts");
-const getPostById = (id) => api.get(`/posts/${id}`);
-const createPost = (data) => api.post("/posts", data);
-const updatePost = (id, data) => api.put(`/posts/${id}`, data);
-const deletePost = (id) => api.delete(`/posts/${id}`);
-module.exports = {
-    getPosts,
-    getPostById,
-    createPost,
-    updatePost,
-    deletePost
-=======
 const User = require("../models/User");
 const Course = require("../models/Course");
 
@@ -87,12 +73,26 @@ const assignTeacher = async (teacherId, courseId) => {
         message: "Teacher assigned"
     };
 };
+const getStudents = async () => {
+    return await User.find({ role: "student" });
+};
 
+const getTeachers = async () => {
+    return await User.find({ role: "teacher" });
+};
+
+const getCourses = async () => {
+    return await Course.find()
+        .populate("teacher")
+        .populate("students");
+};
 module.exports = {
     createStudent,
     createTeacher,
     createCourse,
     enrollStudent,
-    assignTeacher
->>>>>>> Stashed changes
+    assignTeacher,
+    getStudents,
+    getTeachers,
+    getCourses
 };
