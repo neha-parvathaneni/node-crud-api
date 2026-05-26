@@ -6,14 +6,22 @@ const {
     createTeacher,
     createCourse,
     enrollStudent,
-    assignTeacher
+    assignTeacher,
+    getStudents,
+    getTeachers,
+    getCourses
 } = require("../controllers");
 
+router.get("/students", getStudents);
+router.get("/teachers", getTeachers);
+router.get("/courses", getCourses);
 
 router.post("/students", createStudent);
 router.post("/teachers", createTeacher);
 router.post("/courses", createCourse);
-router.post("/student-courses", enrollStudent);  
+
+router.post("/student-courses", enrollStudent);
+
 router.put("/courses/assign-teacher", assignTeacher);
 
 module.exports = router;

@@ -2,11 +2,11 @@ SET XACT_ABORT ON;
 BEGIN TRANSACTION;
 
 
-IF OBJECT_ID('dbo.StudentCourses', 'U') IS NOT NULL DROP TABLE dbo.StudentCourses;
-IF OBJECT_ID('dbo.Courses', 'U') IS NOT NULL DROP TABLE dbo.Courses;
-IF OBJECT_ID('dbo.Students', 'U') IS NOT NULL DROP TABLE dbo.Students;
-IF OBJECT_ID('dbo.Teachers', 'U') IS NOT NULL DROP TABLE dbo.Teachers;
-IF OBJECT_ID('dbo.People', 'U') IS NOT NULL DROP TABLE dbo.People
+IF OBJECT_ID('dbo.StudentCourse', 'U') IS NOT NULL DROP TABLE dbo.StudentCourse;
+IF OBJECT_ID('dbo.Course', 'U') IS NOT NULL DROP TABLE dbo.Course;
+IF OBJECT_ID('dbo.Student', 'U') IS NOT NULL DROP TABLE dbo.Student;
+IF OBJECT_ID('dbo.Teacher', 'U') IS NOT NULL DROP TABLE dbo.Teacher;
+IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
 
 CREATE TABLE dbo.[User] (
     Id INT IDENTITY(1,1) PRIMARY KEY,

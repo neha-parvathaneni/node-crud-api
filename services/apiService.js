@@ -1,33 +1,41 @@
 const { getPool, sql } = require("../config/db");
 
+
+const execute = async (requestOrPool, query, params = []) => {
+    const request = requestOrPool.request ? requestOrPool.request() : requestOrPool;
+    for (const { name, type, value } of params) {
+        request.input(name, type, value);
+    }
+    return request.query(query);
+};
+
+
 const createStudent = async (data) => {
     const pool = getPool();
     const transaction = new sql.Transaction(pool);
 
     try {
         await transaction.begin();
-        const request = new sql.Request(transaction);
-        const userResult = await request
-            .input("Name", sql.NVarChar, data.Name)
-            .input("Age", sql.Int, data.Age)
-            .input("Email", sql.NVarChar, data.Email)
-            .query(`
-                INSERT INTO [User] (Name, Age, Email)
-                OUTPUT INSERTED.Id
-                VALUES (@Name, @Age, @Email)
-            `);
+
+        const userResult = await execute(
+            new sql.Request(transaction),
+            `INSERT INTO [User] (Name, Age, Email) OUTPUT INSERTED.Id VALUES (@Name, @Age, @Email)`,
+            [
+                { name: "Name",  type: sql.NVarChar, value: data.name },
+                { name: "Age",   type: sql.Int,      value: parseInt(data.age) },
+                { name: "Email", type: sql.NVarChar, value: data.email },
+            ]
+        );
 
         const userId = userResult.recordset[0].Id;
 
-        await request
-            .input("UserId", sql.Int, userId)
-            .query(`
-                INSERT INTO Student (UserId)
-                VALUES (@UserId)
-            `);
+        await execute(
+            new sql.Request(transaction),
+            `INSERT INTO Student (UserId) VALUES (@UserId)`,
+            [{ name: "UserId", type: sql.Int, value: userId }]
+        );
 
         await transaction.commit();
-
         return { message: "Student created", userId };
 
     } catch (err) {
@@ -42,90 +50,135 @@ const createTeacher = async (data) => {
     const transaction = new sql.Transaction(pool);
 
     try {
+        await transaction.begin();
 
-    const userResult = await pool.request()
-        .input("Name", sql.NVarChar, data.Name)
-        .input("Age", sql.Int, data.Age)
-        .input("Email", sql.NVarChar, data.Email)
-        .query(`
-            INSERT INTO [User] (Name, Age, Email)
-            OUTPUT INSERTED.Id
-            VALUES (@Name, @Age, @Email)
-        `);
+        const userResult = await execute(
+            new sql.Request(transaction),
+            `INSERT INTO [User] (Name, Age, Email) OUTPUT INSERTED.Id VALUES (@Name, @Age, @Email)`,
+            [
+                { name: "Name",  type: sql.NVarChar, value: data.name },
+                { name: "Age",   type: sql.Int,      value: parseInt(data.age) },
+                { name: "Email", type: sql.NVarChar, value: data.email },
+            ]
+        );
 
-    const userId = userResult.recordset[0].Id;
+        const userId = userResult.recordset[0].Id;
 
-    await pool.request()
-        .input("UserId", sql.Int, userId)
-        .query(`
-            INSERT INTO Teacher (UserId)
-            VALUES (@UserId)
-        `);
+        await execute(
+            new sql.Request(transaction),
+            `INSERT INTO Teacher (UserId) VALUES (@UserId)`,
+            [{ name: "UserId", type: sql.Int, value: userId }]
+        );
 
-    await transaction.commit();
+        await transaction.commit();
+        return { message: "Teacher created", userId };
 
-    return { message: "Teacher created", userId };
-        } catch (err) {
-            await transaction.rollback();
-            throw err;
-        }
+    } catch (err) {
+        await transaction.rollback();
+        throw err;
+    }
 };
 
-const createCourse = async (data) => {
-    const pool = getPool();
 
-    await pool.request()
-        .input("Code", sql.NVarChar, data.Code)
-        .input("Title", sql.NVarChar, data.Title)
-        .input("Credits", sql.Int, data.Credits)
-        .query(`
-            INSERT INTO Course (Code, Title, Credits)
-            VALUES (@Code, @Title, @Credits)
-        `);
+const createCourse = async (data) => {
+    await execute(
+        getPool(),
+        `INSERT INTO Course (Code, Title, Credits) VALUES (@Code, @Title, @Credits)`,
+        [
+            { name: "Code",    type: sql.NVarChar, value: data.code },
+            { name: "Title",   type: sql.NVarChar, value: data.title },
+            { name: "Credits", type: sql.Int,      value: parseInt(data.credits) },
+        ]
+    );
 
     return { message: "Course created" };
 };
 
-const enrollStudent = async (studentId, courseId) => {
-    const pool = getPool();
 
-    const existing = await pool.request()
-        .input("StudentId", sql.Int, studentId)
-        .input("CourseId", sql.Int, courseId)
-        .query(`
-            SELECT * FROM StudentCourse
-            WHERE StudentId=@StudentId AND CourseId=@CourseId
-        `);
+const enrollStudent = async (studentId, courseId) => {
+    const params = [
+        { name: "StudentId", type: sql.Int, value: studentId },
+        { name: "CourseId",  type: sql.Int, value: courseId },
+    ];
+
+    const existing = await execute(
+        getPool(),
+        `SELECT * FROM StudentCourse WHERE StudentId = @StudentId AND CourseId = @CourseId`,
+        params
+    );
 
     if (existing.recordset.length) {
         throw new Error("Student already enrolled");
     }
 
-    await pool.request()
-        .input("StudentId", sql.Int, studentId)
-        .input("CourseId", sql.Int, courseId)
-        .query(`
-            INSERT INTO StudentCourse (StudentId, CourseId)
-            VALUES (@StudentId, @CourseId)
-        `);
+    await execute(
+        getPool(),
+        `INSERT INTO StudentCourse (StudentId, CourseId) VALUES (@StudentId, @CourseId)`,
+        params
+    );
 
     return { message: "Enrollment successful" };
 };
 
 
 const assignTeacher = async (teacherId, courseId) => {
-    const pool = getPool();
-
-    await pool.request()
-        .input("TeacherId", sql.Int, teacherId)
-        .input("CourseId", sql.Int, courseId)
-        .query(`
-            UPDATE Course
-            SET TeacherId=@TeacherId
-            WHERE Id=@CourseId
-        `);
+    await execute(
+        getPool(),
+        `UPDATE Course SET TeacherId = @TeacherId WHERE Id = @CourseId`,
+        [
+            { name: "TeacherId", type: sql.Int, value: teacherId },
+            { name: "CourseId",  type: sql.Int, value: courseId },
+        ]
+    );
 
     return { message: "Teacher assigned" };
+};
+
+const getStudents = async () => {
+    const result = await execute(getPool(), `
+        SELECT
+            s.Id    AS _id,
+            u.Name  AS name,
+            u.Age   AS age,
+            u.Email AS email
+        FROM Student s
+        JOIN [User] u ON s.UserId = u.Id
+    `);
+
+    return result.recordset;
+};
+
+const getTeachers = async () => {
+    const result = await execute(getPool(), `
+        SELECT
+            t.Id    AS _id,
+            u.Name  AS name,
+            u.Age   AS age,
+            u.Email AS email
+        FROM Teacher t
+        JOIN [User] u ON t.UserId = u.Id
+    `);
+
+    return result.recordset;
+};
+
+const getCourses = async () => {
+    const result = await execute(getPool(), `
+        SELECT
+            c.Id      AS _id,
+            c.Code    AS code,
+            c.Title   AS title,
+            c.Credits AS credits,
+            u.Name    AS teacherName,
+            COUNT(sc.StudentId) AS studentCount
+        FROM Course c
+        LEFT JOIN Teacher t        ON c.TeacherId = t.Id
+        LEFT JOIN [User]  u        ON t.UserId    = u.Id
+        LEFT JOIN StudentCourse sc ON sc.CourseId = c.Id
+        GROUP BY c.Id, c.Code, c.Title, c.Credits, u.Name
+    `);
+
+    return result.recordset;
 };
 
 module.exports = {
@@ -133,5 +186,8 @@ module.exports = {
     createTeacher,
     createCourse,
     enrollStudent,
-    assignTeacher
+    assignTeacher,
+    getStudents,
+    getTeachers,
+    getCourses
 };
