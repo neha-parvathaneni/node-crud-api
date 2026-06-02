@@ -74,10 +74,10 @@ function EnrollStudent() {
       <SelectComponent
         value={enrollData.studentId}
         onChange={(e) =>
-          setEnrollData({
-            ...enrollData,
+          setEnrollData((prev) => ({
+            ...prev,
             studentId: e.target.value
-          })
+          }))
         }
         options={students}
         labelKey="name"
@@ -88,10 +88,10 @@ function EnrollStudent() {
       <SelectComponent
         value={enrollData.courseId}
         onChange={(e) =>
-          setEnrollData({
-            ...enrollData,
+          setEnrollData((prev) => ({
+            ...prev,
             courseId: e.target.value
-          })
+          }))
         }
         options={courses}
         labelKey="title"

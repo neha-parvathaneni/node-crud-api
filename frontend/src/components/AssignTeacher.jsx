@@ -74,10 +74,10 @@ function AssignTeacher() {
       <SelectComponent
         value={assignData.teacherId}
         onChange={(e) =>
-          setAssignData({
-            ...assignData,
+          setAssignData((prev) => ({
+            ...prev,
             teacherId: e.target.value
-          })
+          }))
         }
         options={teachers}
         labelKey="name"
@@ -88,10 +88,10 @@ function AssignTeacher() {
       <SelectComponent
         value={assignData.courseId}
         onChange={(e) =>
-          setAssignData({
-            ...assignData,
+          setAssignData((prev) => ({
+            ...prev,
             courseId: e.target.value
-          })
+          }))
         }
         options={courses}
         labelKey="title"
