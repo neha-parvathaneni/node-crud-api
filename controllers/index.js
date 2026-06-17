@@ -1,48 +1,100 @@
 const apiService = require("../services/apiService");
-const getPosts = async (req, res) => {
+
+const createStudent = async (req, res) => {
     try {
-        const response = await apiService.getPosts();
-        return res.status(200).json(response.data);
-    } catch (error) {
-        res.status(500).json({ error : "Failed to fetch posts" });
+        const result = await apiService.createStudent(req.body);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
-const getPost = async (req, res) => {
-    try{
-        const response = await apiService.getPostById(req.params.id);
-        return res.status(200).json(response.data);
-    } catch (error) {
-        res.status(500).json({ error : "Failed to fetch post" });
-    }
-};
-const createPost = async (req, res) => {
+
+const createTeacher = async (req, res) => {
     try {
-        const response = await apiService.createPost(req.body);
-        return res.status(201).json(response.data);
-    } catch (error) {
-        res.status(500).json({ error : "Failed to create post" });
+        const result = await apiService.createTeacher(req.body);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
-const updatePost = async (req, res) => {
+
+const createCourse = async (req, res) => {
     try {
-        const response = await apiService.updatePost(req.params.id, req.body);
-        return res.status(200).json(response.data);
-    } catch(error) {
-        res.status(500).json({ error : "Failed to update post" });
+        const result = await apiService.createCourse(req.body);
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
-const deletePost = async (req, res) => {
+
+const enrollStudent = async (req, res) => {
     try {
-        await apiService.deletePost(req.params.id);
-        res.json({ message : "Post deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error : "Failed to delete post" });
+        // FIX: parse to integers — req.body values arrive as strings
+        const studentId = parseInt(req.body.studentId);
+        const courseId  = parseInt(req.body.courseId);
+
+        if (isNaN(studentId) || isNaN(courseId)) {
+            return res.status(400).json({ error: "studentId and courseId must be valid numbers" });
+        }
+
+        const result = await apiService.enrollStudent(studentId, courseId);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
     }
 };
+
+const assignTeacher = async (req, res) => {
+    try {
+        // FIX: parse to integers — req.body values arrive as strings
+        const teacherId = parseInt(req.body.teacherId);
+        const courseId  = parseInt(req.body.courseId);
+
+        if (isNaN(teacherId) || isNaN(courseId)) {
+            return res.status(400).json({ error: "teacherId and courseId must be valid numbers" });
+        }
+
+        const result = await apiService.assignTeacher(teacherId, courseId);
+        res.json(result);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+const getStudents = async (req, res) => {
+    try {
+        const result = await apiService.getStudents();
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const getTeachers = async (req, res) => {
+    try {
+        const result = await apiService.getTeachers();
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+const getCourses = async (req, res) => {
+    try {
+        const result = await apiService.getCourses();
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
-    getPosts,
-    getPost,
-    createPost,
-    updatePost,
-    deletePost
+    createStudent,
+    createTeacher,
+    createCourse,
+    enrollStudent,
+    assignTeacher,
+    getStudents,
+    getTeachers,
+    getCourses
 };

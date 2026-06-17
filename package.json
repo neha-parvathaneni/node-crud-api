@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "jest",
+    "test:integration": "jest --runInBand integration",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -14,10 +17,23 @@
   "type": "commonjs",
   "dependencies": {
     "axios": "^1.15.2",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mssql": "^12.5.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "jest": "^30.0.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.1.1"
+  },
+  "jest": {
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/frontend/"
+    ]
   }
 }
